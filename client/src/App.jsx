@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
+import { useState, useEffect } from 'react'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import LoadingSpinner from './components/ui/LoadingSpinner'
@@ -15,6 +16,8 @@ import TeacherDashboard from './pages/TeacherDashboard'
 import TeacherCoursePage from './pages/TeacherCoursePage'
 import CheckoutSuccess from './pages/CheckoutSuccess'
 import CheckoutCancel from './pages/CheckoutCancel'
+import Courses from './components/courses/Courses'
+import api from './api/axios'
 
 /* ═══════════════════════════════════════════════════════════════
    Protected Route — checks auth + role
@@ -59,6 +62,22 @@ function Layout() {
    ═══════════════════════════════════════════════════════════════ */
 export default function App() {
   const { loading } = useAuth()
+  const [courses, setCourses] = useState([])
+  const [ loadingCourses, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await api.get('/courses')
+        setCourses(res.data.data || res.data || [])
+      } catch (err) {
+        setError('Failed to load courses. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchCourses()
+  }, [])
 
   if (loading) {
     return <LoadingSpinner fullPage text="Loading SkillSphere..." />
@@ -74,6 +93,7 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/checkout/success" element={<CheckoutSuccess />} />
         <Route path="/checkout/cancel" element={<CheckoutCancel />} />
+        <Route path="/courses" element={<Courses courses={courses}/>} />
 
         {/* Student-only routes */}
         <Route element={<ProtectedRoute allowedRoles={['student']} />}>

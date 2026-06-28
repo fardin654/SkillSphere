@@ -165,7 +165,7 @@ img {
 }
 
 .gradient-text-hero {
-  background: linear-gradient(135deg, #c7d2fe 0%, #818cf8 25%, #6366f1 50%, #8b5cf6 75%, #a78bfa 100%);
+  background: linear-gradient(135deg, #6366f1 0%,#4f46e5 35%,#4338ca 65%,#6d28d9 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -75,22 +75,22 @@ export default function RegisterPage() {
   ]
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 page-enter relative">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 page-enter relative bg-slate-50">
       {/* Background orbs */}
       <div className="orb orb-primary w-[400px] h-[400px] -top-20 -right-20 animate-float-slow" />
       <div className="orb orb-accent w-[300px] h-[300px] -bottom-10 -left-16 animate-float" />
 
       <div className="relative z-10 w-full max-w-md">
-        <div className="glass-strong p-8 gradient-border animate-scale-in">
+        <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-200 animate-scale-in">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/25">
               <Sparkles size={22} className="text-white" />
             </div>
-            <h1 className="text-2xl font-bold font-[family-name:var(--font-family-heading)] text-white">
+            <h1 className="text-2xl font-bold font-[family-name:var(--font-family-heading)] text-slate-900">
               Create your account
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-slate-600 mt-1">
               Join SkillSphere and start your journey
             </p>
           </div>
@@ -104,17 +104,17 @@ export default function RegisterPage() {
                 onClick={() => setRole(r.value)}
                 className={`p-4 rounded-xl text-left transition-all duration-200 border ${
                   role === r.value
-                    ? 'bg-indigo-500/10 border-indigo-500/40 shadow-lg shadow-indigo-500/5'
-                    : 'bg-white/3 border-white/5 hover:border-white/15 hover:bg-white/5'
+                    ? 'bg-indigo-50 border-indigo-200 shadow-sm'
+                    : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 <r.icon
                   size={20}
-                  className={role === r.value ? 'text-indigo-400' : 'text-slate-500'}
+                  className={role === r.value ? 'text-indigo-600' : 'text-slate-500'}
                 />
                 <p
                   className={`text-sm font-semibold mt-2 ${
-                    role === r.value ? 'text-white' : 'text-slate-300'
+                    role === r.value ? 'text-indigo-900' : 'text-slate-700'
                   }`}
                 >
                   {r.title}
@@ -128,17 +128,17 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+              <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">
                 Full Name
               </label>
               <div className="relative">
-                <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your full name"
-                  className="input-dark pl-10"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all py-2.5 rounded-xl pl-10"
                   autoComplete="name"
                 />
               </div>
@@ -146,17 +146,17 @@ export default function RegisterPage() {
 
             {/* Email */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+              <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">
                 Email
               </label>
               <div className="relative">
-                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="input-dark pl-10"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all py-2.5 rounded-xl pl-10"
                   autoComplete="email"
                 />
               </div>
@@ -164,23 +164,23 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+              <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">
                 Password
               </label>
               <div className="relative">
-                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min. 6 characters"
-                  className="input-dark pl-10 pr-10"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all py-2.5 rounded-xl pl-10 pr-10"
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -189,17 +189,17 @@ export default function RegisterPage() {
 
             {/* Confirm Password */}
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+              <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">
                 Confirm Password
               </label>
               <div className="relative">
-                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter password"
-                  className="input-dark pl-10"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all py-2.5 rounded-xl pl-10"
                   autoComplete="new-password"
                 />
               </div>
@@ -212,9 +212,9 @@ export default function RegisterPage() {
 
           {/* Divider */}
           <div className="flex items-center gap-4 my-6">
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-slate-200" />
             <span className="text-xs text-slate-500 uppercase">or</span>
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-slate-200" />
           </div>
 
           {/* Google */}
@@ -222,7 +222,7 @@ export default function RegisterPage() {
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={() => toast.error('Google sign-in failed')}
-              theme="filled_black"
+              theme="outline"
               shape="pill"
               size="large"
               text="signup_with"
@@ -230,11 +230,11 @@ export default function RegisterPage() {
           </div>
 
           {/* Login link */}
-          <p className="text-center text-sm text-slate-400 mt-6">
+          <p className="text-center text-sm text-slate-600 mt-6">
             Already have an account?{' '}
             <Link
               to="/login"
-              className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+              className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
             >
               Sign in
             </Link>

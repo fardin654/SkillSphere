@@ -75,7 +75,7 @@ export default function StudentDashboard() {
             <p className="text-slate-400 mb-6 max-w-sm mx-auto">
               You haven't enrolled in any courses. Browse our catalog to find something that excites you!
             </p>
-            <Link to="/">
+            <Link to="/courses">
               <Button size="md" className="group">
                 Browse Courses
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />

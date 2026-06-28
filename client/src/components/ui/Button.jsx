@@ -2,11 +2,11 @@ import { Loader2 } from 'lucide-react'
 
 const variants = {
   primary:
-    'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 btn-glow',
+    'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 btn-glow hover:cursor-pointer',
   secondary:
-    'bg-transparent text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/10 hover:border-indigo-400/60',
+    'bg-transparent text-black border border-black-500/40 hover:bg-indigo-500/10 hover:border-indigo-400/60 hover:cursor-pointer',
   danger:
-    'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40',
+    'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40 ',
   ghost:
     'bg-transparent text-slate-300 hover:text-white hover:bg-white/5',
   accent:
