@@ -17,6 +17,7 @@ import TeacherCoursePage from './pages/TeacherCoursePage'
 import CheckoutSuccess from './pages/CheckoutSuccess'
 import CheckoutCancel from './pages/CheckoutCancel'
 import Courses from './components/courses/Courses'
+import AdminDashboard from './pages/AdminDashboard'
 import api from './api/axios'
 
 /* ═══════════════════════════════════════════════════════════════
@@ -105,6 +106,11 @@ export default function App() {
         <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
           <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
           <Route path="/teacher/course/:id" element={<TeacherCoursePage />} />
+        </Route>
+
+        {/* Admin-only routes */}
+        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
 
         {/* Catch-all */}

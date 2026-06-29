@@ -18,8 +18,10 @@ const getSessionsByCourse = async (req, res) => {
 
     const sessions = await ClassSession.find({ courseId }).sort({ startTime: 1 });
 
-    // Check if the requesting user is the course teacher
-    const isTeacher = course.educator.toString() === req.user.id;
+    // Check if the requesting user is a course teacher (educator or in instructors array)
+    const isTeacher =
+      (course.educator && course.educator.toString() === req.user.id) ||
+      (course.instructors && course.instructors.some((i) => i.toString() === req.user.id));
 
     if (isTeacher) {
       // Teachers see everything
@@ -89,7 +91,8 @@ const createSession = async (req, res) => {
     }
 
     if (
-      course.educator.toString() !== req.user.id &&
+      !(course.educator && course.educator.toString() === req.user.id) &&
+      !(course.instructors && course.instructors.some((i) => i.toString() === req.user.id)) &&
       req.user.role !== 'admin'
     ) {
       return res.status(403).json({
@@ -142,7 +145,8 @@ const updateSession = async (req, res) => {
     }
 
     if (
-      course.educator.toString() !== req.user.id &&
+      !(course.educator && course.educator.toString() === req.user.id) &&
+      !(course.instructors && course.instructors.some((i) => i.toString() === req.user.id)) &&
       req.user.role !== 'admin'
     ) {
       return res.status(403).json({
@@ -195,7 +199,8 @@ const updateMeetLink = async (req, res) => {
     }
 
     if (
-      course.educator.toString() !== req.user.id &&
+      !(course.educator && course.educator.toString() === req.user.id) &&
+      !(course.instructors && course.instructors.some((i) => i.toString() === req.user.id)) &&
       req.user.role !== 'admin'
     ) {
       return res.status(403).json({
@@ -229,8 +234,13 @@ const updateMeetLink = async (req, res) => {
 // @access  Private (teacher, admin)
 const getTeacherSchedule = async (req, res) => {
   try {
-    // Find all courses the teacher owns
-    const courses = await Course.find({ educator: req.user.id }).select('_id');
+    // Find all courses the teacher owns (educator or in instructors)
+    const courses = await Course.find({
+      $or: [
+        { educator: req.user.id },
+        { instructors: req.user.id },
+      ],
+    }).select('_id');
     const courseIds = courses.map((c) => c._id);
 
     // Find all sessions for those courses, sorted by startTime

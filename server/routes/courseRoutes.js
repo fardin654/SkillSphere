@@ -25,10 +25,10 @@ router.get('/', getAllCourses);
 // GET /api/courses/:id — single course (public)
 router.get('/:id', getCourseById);
 
-// POST /api/courses — create course (teacher/admin)
-router.post('/', protect, authorize('teacher', 'admin'), createCourse);
+// POST /api/courses — create course (admin only)
+router.post('/', protect, authorize('admin'), createCourse);
 
-// PUT /api/courses/:id — update course (teacher/admin)
-router.put('/:id', protect, authorize('teacher', 'admin'), updateCourse);
+// PUT /api/courses/:id — update course (admin only)
+router.put('/:id', protect, authorize('admin'), updateCourse);
 
 module.exports = router;

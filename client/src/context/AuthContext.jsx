@@ -52,9 +52,9 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
-  const register = useCallback(async (name, email, password, role = 'student') => {
+  const register = useCallback(async (name, email, password, role = 'student', extraData = {}) => {
     try {
-      const res = await api.post('/auth/register', { name, email, password, role })
+      const res = await api.post('/auth/register', { name, email, password, role, ...extraData })
       const payload = res.data.data || res.data
       const { token: newToken, user: userData } = payload
       localStorage.setItem('skillsphere_token', newToken)

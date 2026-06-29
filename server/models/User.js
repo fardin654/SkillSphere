@@ -29,6 +29,24 @@ const userSchema = new mongoose.Schema(
         ref: 'Course',
       },
     ],
+    approvalStatus: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'approved',
+    },
+    phoneNumber: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    intendedCourse: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Course',
+    },
+    dob: {
+      type: Date,
+    },
     googleId: {
       type: String,
     },

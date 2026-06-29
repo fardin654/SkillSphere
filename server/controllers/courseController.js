@@ -6,10 +6,9 @@ const User = require('../models/User');
 // @access  Public
 const getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find({ isActive: true }).populate(
-      'educator',
-      'name'
-    );
+    const courses = await Course.find({ isActive: true })
+      .populate('educator', 'name')
+      .populate('instructors', 'name');
 
     res.status(200).json({
       success: true,
@@ -29,10 +28,9 @@ const getAllCourses = async (req, res) => {
 // @access  Public
 const getCourseById = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id).populate(
-      'educator',
-      'name email'
-    );
+    const course = await Course.findById(req.params.id)
+      .populate('educator', 'name email')
+      .populate('instructors', 'name');
 
     if (!course) {
       return res.status(404).json({
@@ -56,10 +54,20 @@ const getCourseById = async (req, res) => {
 
 // @desc    Create a new course
 // @route   POST /api/courses
-// @access  Private (teacher, admin)
+// @access  Private (admin)
 const createCourse = async (req, res) => {
   try {
-    const { title, description, price, thumbnailImage } = req.body;
+    const {
+      title,
+      description,
+      introduction,
+      price,
+      currency,
+      thumbnailImage,
+      instructors,
+      courseDetails,
+      whatYouWillReceive,
+    } = req.body;
 
     // Validate required fields
     if (!title || !description || price === undefined || price === null) {
@@ -79,14 +87,24 @@ const createCourse = async (req, res) => {
     const course = await Course.create({
       title,
       description,
+      introduction: introduction || '',
       price,
+      currency: currency || 'INR',
       thumbnailImage: thumbnailImage || '',
       educator: req.user.id,
+      instructors: instructors || [],
+      courseDetails: courseDetails || {},
+      whatYouWillReceive: whatYouWillReceive || [],
     });
+
+    // Populate instructors before returning
+    const populatedCourse = await Course.findById(course._id)
+      .populate('educator', 'name')
+      .populate('instructors', 'name');
 
     res.status(201).json({
       success: true,
-      data: course,
+      data: populatedCourse,
     });
   } catch (error) {
     console.error('CreateCourse error:', error.message);
@@ -99,7 +117,7 @@ const createCourse = async (req, res) => {
 
 // @desc    Update a course
 // @route   PUT /api/courses/:id
-// @access  Private (teacher who owns it, or admin)
+// @access  Private (admin)
 const updateCourse = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
@@ -111,10 +129,11 @@ const updateCourse = async (req, res) => {
       });
     }
 
-    // Verify ownership (teacher must own the course; admins can edit any)
+    // Admins can update any course; teachers must own it
     if (
-      course.educator.toString() !== req.user.id &&
-      req.user.role !== 'admin'
+      req.user.role !== 'admin' &&
+      course.educator &&
+      course.educator.toString() !== req.user.id
     ) {
       return res.status(403).json({
         success: false,
@@ -122,10 +141,22 @@ const updateCourse = async (req, res) => {
       });
     }
 
-    const { title, description, price, thumbnailImage, isActive } = req.body;
+    const {
+      title,
+      description,
+      introduction,
+      price,
+      currency,
+      thumbnailImage,
+      isActive,
+      instructors,
+      courseDetails,
+      whatYouWillReceive,
+    } = req.body;
 
     if (title !== undefined) course.title = title;
     if (description !== undefined) course.description = description;
+    if (introduction !== undefined) course.introduction = introduction;
     if (price !== undefined) {
       if (typeof price !== 'number' || price < 0) {
         return res.status(400).json({
@@ -135,14 +166,25 @@ const updateCourse = async (req, res) => {
       }
       course.price = price;
     }
+    if (currency !== undefined) course.currency = currency;
     if (thumbnailImage !== undefined) course.thumbnailImage = thumbnailImage;
     if (isActive !== undefined) course.isActive = isActive;
+    if (instructors !== undefined) course.instructors = instructors;
+    if (courseDetails !== undefined) {
+      course.courseDetails = { ...course.courseDetails?.toObject?.() || {}, ...courseDetails };
+    }
+    if (whatYouWillReceive !== undefined) course.whatYouWillReceive = whatYouWillReceive;
 
     const updatedCourse = await course.save();
 
+    // Populate before returning
+    const populatedCourse = await Course.findById(updatedCourse._id)
+      .populate('educator', 'name')
+      .populate('instructors', 'name');
+
     res.status(200).json({
       success: true,
-      data: updatedCourse,
+      data: populatedCourse,
     });
   } catch (error) {
     console.error('UpdateCourse error:', error.message);
@@ -158,10 +200,15 @@ const updateCourse = async (req, res) => {
 // @access  Private (teacher, admin)
 const getTeacherCourses = async (req, res) => {
   try {
-    const courses = await Course.find({ educator: req.user.id }).populate(
-      'educator',
-      'name'
-    );
+    // Find courses where user is either the educator or in the instructors array
+    const courses = await Course.find({
+      $or: [
+        { educator: req.user.id },
+        { instructors: req.user.id },
+      ],
+    })
+      .populate('educator', 'name')
+      .populate('instructors', 'name');
 
     res.status(200).json({
       success: true,
@@ -183,10 +230,10 @@ const getEnrolledCourses = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate({
       path: 'enrolledCourses',
-      populate: {
-        path: 'educator',
-        select: 'name',
-      },
+      populate: [
+        { path: 'educator', select: 'name' },
+        { path: 'instructors', select: 'name' },
+      ],
     });
 
     if (!user) {

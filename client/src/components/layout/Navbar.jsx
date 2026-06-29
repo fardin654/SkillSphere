@@ -11,6 +11,7 @@ import {
   LogOut,
   ChevronDown,
   Sparkles,
+  ShieldAlert,
 } from 'lucide-react'
 
 export default function Navbar() {
@@ -60,6 +61,12 @@ export default function Navbar() {
         { to: '/courses', label: 'Courses', icon: BookOpen },
         { to: '/teacher/dashboard', label: 'My Courses', icon: GraduationCap },
         { to: '/teacher/dashboard', label: 'Schedule', icon: CalendarDays, hash: '#schedule' },
+      ]
+    }
+    if (user?.role === 'admin') {
+      return [
+        { to: '/courses', label: 'Courses', icon: BookOpen },
+        { to: '/admin/dashboard', label: 'Admin Dashboard', icon: ShieldAlert },
       ]
     }
     return [

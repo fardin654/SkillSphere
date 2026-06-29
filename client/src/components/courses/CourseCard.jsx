@@ -7,14 +7,23 @@ export default function CourseCard({ course }) {
     title,
     thumbnailImage: thumbnail,
     price,
+    currency,
     educator,
+    instructors,
   } = course
 
   // Price in rupees (backend stores in paise/cents)
   const displayPrice = price != null ? (price / 100).toFixed(0) : 'Free'
+  const currencySymbol = currency === 'USD' ? '$' : '₹'
 
-  const educatorName =
-    typeof educator === 'object' ? educator.name : educator || 'Instructor'
+  // Resolve instructor names: prefer new instructors array, fall back to educator
+  const instructorNames =
+    instructors && instructors.length > 0
+      ? instructors.map((i) => (typeof i === 'object' ? i.name : i))
+      : educator
+        ? [typeof educator === 'object' ? educator.name : educator]
+        : ['Instructor']
+  const displayInstructor = instructorNames.join(', ')
 
   return (
     <Link
@@ -43,8 +52,7 @@ export default function CourseCard({ course }) {
           <span className="inline-flex items-center gap-0.5 rounded-full border border-white/10 bg-black/50 px-3 py-1 text-xs font-bold text-white backdrop-blur-md">
             {price > 0 ? (
               <>
-                <IndianRupee size={12} />
-                {displayPrice}
+                {currencySymbol}{displayPrice}
               </>
             ) : (
               <span className="text-emerald-400">Free</span>
@@ -63,7 +71,7 @@ export default function CourseCard({ course }) {
           <div className="flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-slate-100">
             <User size={12} className="text-slate-500" />
           </div>
-          <span className="truncate text-sm text-slate-500">{educatorName}</span>
+          <span className="truncate text-sm text-slate-500">{displayInstructor}</span>
         </div>
       </div>
     </Link>

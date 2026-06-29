@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { GoogleLogin } from '@react-oauth/google'
-import { Mail, Lock, Eye, EyeOff, User, BookOpen, GraduationCap, Sparkles } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, User, BookOpen, GraduationCap, Sparkles, Phone, MapPin, Calendar, Book } from 'lucide-react'
+import api from '../api/axios'
 import { useAuth } from '../hooks/useAuth'
 import Button from '../components/ui/Button'
 import toast from 'react-hot-toast'
@@ -17,6 +18,25 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  // Teacher-specific states
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [stateName, setStateName] = useState('')
+  const [intendedCourse, setIntendedCourse] = useState('')
+  const [dob, setDob] = useState('')
+  const [courses, setCourses] = useState([])
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await api.get('/courses')
+        setCourses(res.data.data || res.data || [])
+      } catch (err) {
+        console.error('Failed to fetch courses', err)
+      }
+    }
+    fetchCourses()
+  }, [])
+
   // Redirect if already logged in
   if (isAuthenticated && user) {
     const dest = user.role === 'teacher' ? '/teacher/dashboard' : '/dashboard'
@@ -26,7 +46,11 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!name || !email || !password || !confirmPassword) {
-      toast.error('Please fill in all fields')
+      toast.error('Please fill in all basic fields')
+      return
+    }
+    if (role === 'teacher' && (!phoneNumber || !stateName || !intendedCourse || !dob)) {
+      toast.error('Please fill in all teacher fields')
       return
     }
     if (password !== confirmPassword) {
@@ -39,7 +63,8 @@ export default function RegisterPage() {
     }
     setLoading(true)
     try {
-      const userData = await register(name, email, password, role)
+      const extraData = role === 'teacher' ? { phoneNumber, state: stateName, intendedCourse, dob } : {}
+      const userData = await register(name, email, password, role, extraData)
       const dest = userData.role === 'teacher' ? '/teacher/dashboard' : '/dashboard'
       navigate(dest)
     } catch {
@@ -161,6 +186,52 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
+
+            {/* Teacher Specific Fields */}
+            {role === 'teacher' && (
+              <div className="space-y-4 pt-2 pb-2 border-y border-slate-200 my-2">
+                <p className="text-sm font-semibold text-slate-700">Teacher Information</p>
+                
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Phone Number</label>
+                  <div className="relative">
+                    <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Your phone number" className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all py-2.5 rounded-xl pl-10" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">State</label>
+                    <div className="relative">
+                      <MapPin size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input type="text" value={stateName} onChange={(e) => setStateName(e.target.value)} placeholder="E.g. California" className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all py-2.5 rounded-xl pl-10" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Date of Birth</label>
+                    <div className="relative">
+                      <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input type="date" value={dob} onChange={(e) => setDob(e.target.value)} className="w-full bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all py-2.5 rounded-xl pl-10 pr-3" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Intended Course</label>
+                  <div className="relative">
+                    <Book size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <select value={intendedCourse} onChange={(e) => setIntendedCourse(e.target.value)} className="w-full bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all py-2.5 rounded-xl pl-10 appearance-none">
+                      <option value="">Select a course...</option>
+                      {courses.map(c => (
+                        <option key={c._id} value={c._id}>{c.title}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Password */}
             <div className="space-y-1.5">

@@ -70,9 +70,11 @@ export default function StudentCoursePage() {
               {course?.title}
             </h1>
             <p className="text-sm text-slate-400 mt-1">
-              {typeof course?.educator === 'object'
-                ? course.educator.name
-                : course?.educator || 'Instructor'}
+              {course?.instructors && course.instructors.length > 0
+                ? course.instructors.map((i) => (typeof i === 'object' ? i.name : i)).join(', ')
+                : typeof course?.educator === 'object'
+                  ? course.educator.name
+                  : course?.educator || 'Instructor'}
             </p>
           </div>
         </div>
